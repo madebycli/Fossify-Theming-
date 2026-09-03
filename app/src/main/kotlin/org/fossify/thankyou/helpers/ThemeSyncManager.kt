@@ -8,6 +8,8 @@ import android.os.Build
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.ui.graphics.toArgb
+import org.fossify.commons.extensions.getAppIconColors
+import org.fossify.commons.extensions.toggleAppIconColor
 import org.fossify.commons.helpers.MyContentProvider.COL_ACCENT_COLOR
 import org.fossify.commons.helpers.MyContentProvider.COL_APP_ICON_COLOR
 import org.fossify.commons.helpers.MyContentProvider.COL_BACKGROUND_COLOR
@@ -33,6 +35,8 @@ object ThemeSyncManager {
             role = ThemeColorRole.APP_ICON,
             systemColors = systemColors,
         )
+
+        applyLocalAppIcon(context, appIconColor)
 
         val values = ContentValues().apply {
             put(COL_APP_ICON_COLOR, appIconColor)
@@ -105,6 +109,20 @@ object ThemeSyncManager {
             nearestAppIconColor(context, color)
         } else {
             color
+        }
+    }
+
+    private fun applyLocalAppIcon(context: Context, targetColor: Int) {
+        val appId = context.packageName
+        val colors = context.getAppIconColors()
+
+        colors.forEachIndexed { index, color ->
+            context.toggleAppIconColor(appId, index, color, false)
+        }
+        colors.forEachIndexed { index, color ->
+            if (color == targetColor) {
+                context.toggleAppIconColor(appId, index, color, true)
+            }
         }
     }
 
