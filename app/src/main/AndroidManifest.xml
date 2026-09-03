@@ -102,7 +102,7 @@
 
         <provider
             android:name="org.fossify.thankyou.contentproviders.MyContentProvider"
-            android:authorities="org.forfossify.theming.provider"
+            android:authorities="${themeProviderAuthority}"
             android:exported="true" />
 
         <activity-alias
