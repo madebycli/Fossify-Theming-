@@ -6,12 +6,10 @@ import org.fossify.commons.R
 import org.fossify.commons.compose.extensions.MyDevices
 import org.fossify.commons.compose.lists.SimpleColumnScaffold
 import org.fossify.commons.compose.settings.SettingsGroup
-import org.fossify.commons.compose.settings.SettingsHorizontalDivider
 import org.fossify.commons.compose.settings.SettingsPreferenceComponent
 import org.fossify.commons.compose.settings.SettingsSwitchComponent
 import org.fossify.commons.compose.settings.SettingsTitleTextComponent
 import org.fossify.commons.compose.theme.AppThemeSurface
-import org.fossify.commons.compose.theme.SimpleTheme
 import org.fossify.commons.helpers.isTiramisuPlus
 
 @Composable
@@ -19,46 +17,29 @@ internal fun SettingsScreen(
     displayLanguage: String,
     isUseEnglishEnabled: Boolean,
     isUseEnglishChecked: Boolean,
-    isShowingCheckmarksOnSwitches: Boolean,
     onUseEnglishPress: (Boolean) -> Unit,
     onSetupLanguagePress: () -> Unit,
-    showCheckmarksOnSwitches: (Boolean) -> Unit,
     goBack: () -> Unit,
 ) {
     SimpleColumnScaffold(title = stringResource(id = R.string.settings), goBack = goBack) {
-        if (isUseEnglishEnabled || isTiramisuPlus()) {
-            SettingsGroup(title = {
-                SettingsTitleTextComponent(text = stringResource(id = R.string.general_settings))
-            }) {
-                if (isUseEnglishEnabled) {
-                    SettingsSwitchComponent(
-                        label = stringResource(id = R.string.use_english_language),
-                        initialValue = isUseEnglishChecked,
-                        onChange = onUseEnglishPress,
-                        showCheckmark = isShowingCheckmarksOnSwitches,
-                    )
-                }
-                if (isTiramisuPlus()) {
-                    SettingsPreferenceComponent(
-                        label = stringResource(id = R.string.language),
-                        value = displayLanguage,
-                        doOnPreferenceClick = onSetupLanguagePress,
-                        preferenceLabelColor = SimpleTheme.colorScheme.onSurface,
-                    )
-                }
-            }
-            SettingsHorizontalDivider()
-        }
-
         SettingsGroup(title = {
-            SettingsTitleTextComponent(text = stringResource(id = R.string.all_fossify_apps))
+            SettingsTitleTextComponent(text = stringResource(id = R.string.general_settings))
         }) {
-            SettingsSwitchComponent(
-                label = stringResource(id = org.fossify.thankyou.R.string.show_checkmarks_on_switches),
-                initialValue = isShowingCheckmarksOnSwitches,
-                onChange = showCheckmarksOnSwitches,
-                showCheckmark = isShowingCheckmarksOnSwitches,
-            )
+            if (isUseEnglishEnabled) {
+                SettingsSwitchComponent(
+                    label = stringResource(id = R.string.use_english_language),
+                    initialValue = isUseEnglishChecked,
+                    onChange = onUseEnglishPress,
+                    showCheckmark = false,
+                )
+            }
+            if (isTiramisuPlus()) {
+                SettingsPreferenceComponent(
+                    label = stringResource(id = R.string.language),
+                    value = displayLanguage,
+                    doOnPreferenceClick = onSetupLanguagePress,
+                )
+            }
         }
     }
 }
@@ -71,10 +52,8 @@ private fun SettingsScreenPreview() {
             displayLanguage = "English",
             isUseEnglishEnabled = false,
             isUseEnglishChecked = false,
-            isShowingCheckmarksOnSwitches = false,
             onUseEnglishPress = {},
             onSetupLanguagePress = {},
-            showCheckmarksOnSwitches = {},
             goBack = {},
         )
     }
