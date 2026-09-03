@@ -16,13 +16,11 @@ import org.fossify.commons.helpers.MyContentProvider
 import org.fossify.commons.helpers.isTiramisuPlus
 import org.fossify.thankyou.extensions.config
 import org.fossify.thankyou.extensions.launchChangeAppLanguageIntent
-import org.fossify.thankyou.extensions.startCustomizationActivity
 import org.fossify.thankyou.ui.screens.SettingsScreen
 import java.util.Locale
 import kotlin.system.exitProcess
 
 class SettingsActivity : BaseComposeActivity() {
-
     private val preferences by lazy { config }
 
     @SuppressLint("NewApi")
@@ -40,7 +38,8 @@ class SettingsActivity : BaseComposeActivity() {
                 val displayLanguage = remember { Locale.getDefault().displayLanguage }
                 val isUseEnglishEnabled by remember(wasUseEnglishToggledFlow) {
                     derivedStateOf {
-                        (wasUseEnglishToggledFlow || Locale.getDefault().language != "en") && !isTiramisuPlus()
+                        (wasUseEnglishToggledFlow || Locale.getDefault().language != "en") &&
+                            !isTiramisuPlus()
                     }
                 }
 
@@ -58,12 +57,14 @@ class SettingsActivity : BaseComposeActivity() {
                         preferences.showCheckmarksOnSwitches = isChecked
                         updateGlobalConfig(
                             contentValues = ContentValues().apply {
-                                put(MyContentProvider.COL_SHOW_CHECKMARKS_ON_SWITCHES, isChecked)
+                                put(
+                                    MyContentProvider.COL_SHOW_CHECKMARKS_ON_SWITCHES,
+                                    isChecked,
+                                )
                             }
                         )
                     },
-                    customizeColors = ::startCustomizationActivity,
-                    goBack = ::finish
+                    goBack = ::finish,
                 )
             }
         }
