@@ -80,8 +80,10 @@ android {
     }
 
     buildTypes {
-        // The default debug build intentionally has no applicationIdSuffix. Stock Fossify
-        // apps explicitly look for org.fossify.thankyou before enabling global theming.
+        // Keep one stable standalone application ID for local testing and release builds.
+        debug {
+            applicationIdSuffix = null
+        }
         release {
             isMinifyEnabled = true
             proguardFiles(
@@ -121,7 +123,9 @@ android {
         generateLocaleConfig = true
     }
 
-    namespace = project.property("APP_ID").toString()
+    // Kotlin source packages are migrated separately from the Android application ID.
+    // This namespace is not the installed package name.
+    namespace = "org.fossify.thankyou"
 
     lint {
         checkReleaseBuilds = false
