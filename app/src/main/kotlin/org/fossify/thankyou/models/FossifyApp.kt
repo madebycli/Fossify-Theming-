@@ -12,5 +12,6 @@ data class FossifyApp(
     val signerName: String?,
     val installerPackage: String?,
     val installerName: String?,
-    val verified: Boolean
+    val verified: Boolean,
+    val themingReady: Boolean = false,
 )
