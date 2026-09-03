@@ -24,7 +24,7 @@ fun hasSigningVars(): Boolean {
 
 base {
     val versionCode = project.property("VERSION_CODE").toString().toInt()
-    archivesName = "thankyou-$versionCode"
+    archivesName = "fossify-theming-$versionCode"
 }
 
 android {
