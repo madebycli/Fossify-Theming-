@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_INCLUDE_STOPPED_PACKAGES
-import android.content.pm.PackageManager.SIGNATURE_MATCH
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
@@ -144,13 +143,13 @@ class MyContentProviderHelper private constructor(
             addFlags(FLAG_INCLUDE_STOPPED_PACKAGES)
         }
 
-        val packageName = context.packageName
-        val packageManager = context.packageManager
-        val packages = packageManager.queryBroadcastReceivers(intent, 0)
+        // A custom build cannot share Fossify's original signing certificate.
+        // Target only Fossify package names instead of requiring a signature match.
+        val packages = context.packageManager
+            .queryBroadcastReceivers(intent, 0)
             .map { it.activityInfo.applicationInfo.packageName }
-            .filter {
-                packageManager.checkSignatures(packageName, it) == SIGNATURE_MATCH
-            }
+            .filter { it.startsWith("org.fossify.") }
+            .distinct()
 
         for (`package` in packages) {
             intent.setPackage(`package`)
