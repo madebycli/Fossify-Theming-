@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
@@ -61,7 +60,6 @@ import org.fossify.commons.compose.lists.simpleTopAppBarColors
 import org.fossify.commons.compose.lists.topAppBarInsets
 import org.fossify.commons.compose.lists.topAppBarPaddings
 import org.fossify.commons.compose.settings.SettingsGroupTitle
-import org.fossify.commons.compose.theme.AppThemeSurface
 import org.fossify.commons.compose.theme.SimpleTheme
 import org.fossify.commons.dialogs.ColorPickerAlertDialog
 import org.fossify.thankyou.R
@@ -70,6 +68,7 @@ import org.fossify.thankyou.models.ThemeColorRole
 import org.fossify.thankyou.models.ThemeProfile
 import org.fossify.thankyou.models.ThemeSettings
 import org.fossify.thankyou.ui.components.FossifyApp
+import org.fossify.thankyou.ui.theme.ThemingThemeSurface
 
 @Composable
 internal fun MainScreen(
@@ -84,7 +83,6 @@ internal fun MainScreen(
     onLoadProfile: (ThemeProfile) -> Unit,
     onDeleteProfile: (ThemeProfile) -> Unit,
     openSettings: () -> Unit,
-    openAbout: () -> Unit,
     launchApp: (packageName: String) -> Unit,
     uninstallApp: (packageName: String) -> Unit,
 ) {
@@ -112,13 +110,6 @@ internal fun MainScreen(
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = stringResource(org.fossify.commons.R.string.settings),
-                            tint = scrolledColor,
-                        )
-                    }
-                    IconButton(onClick = openAbout) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = stringResource(org.fossify.commons.R.string.about),
                             tint = scrolledColor,
                         )
                     }
@@ -462,7 +453,7 @@ private fun LazyListScope.fossifyApps(
 private fun MainScreenPreview(
     @PreviewParameter(BooleanPreviewParameterProvider::class) ignored: Boolean,
 ) {
-    AppThemeSurface {
+    ThemingThemeSurface(settings = ThemeSettings()) {
         MainScreen(
             allApps = listOf(
                 FossifyApp(
@@ -489,7 +480,6 @@ private fun MainScreenPreview(
             onLoadProfile = {},
             onDeleteProfile = {},
             openSettings = {},
-            openAbout = {},
             launchApp = {},
             uninstallApp = {},
         )
