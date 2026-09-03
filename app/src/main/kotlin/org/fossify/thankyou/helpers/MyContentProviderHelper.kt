@@ -143,12 +143,10 @@ class MyContentProviderHelper private constructor(
             addFlags(FLAG_INCLUDE_STOPPED_PACKAGES)
         }
 
-        // A custom build cannot share Fossify's original signing certificate.
-        // Target only Fossify package names instead of requiring a signature match.
         val packages = context.packageManager
             .queryBroadcastReceivers(intent, 0)
             .map { it.activityInfo.applicationInfo.packageName }
-            .filter { it.startsWith("org.fossify.") }
+            .filter(::isKnownFossifyPackage)
             .distinct()
 
         for (`package` in packages) {
