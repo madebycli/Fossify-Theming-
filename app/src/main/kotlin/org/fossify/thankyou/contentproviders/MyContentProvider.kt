@@ -5,10 +5,12 @@ import android.content.ContentValues
 import android.content.UriMatcher
 import android.database.Cursor
 import android.net.Uri
+import android.os.Binder
 import android.os.ParcelFileDescriptor
 import android.os.ParcelFileDescriptor.MODE_CREATE
 import android.os.ParcelFileDescriptor.MODE_TRUNCATE
 import android.os.ParcelFileDescriptor.MODE_WRITE_ONLY
+import android.os.Process
 import org.fossify.commons.extensions.isFontFile
 import org.fossify.thankyou.helpers.MyContentProviderHelper
 import java.io.File
@@ -37,6 +39,7 @@ class MyContentProvider : ContentProvider() {
         selectionArgs: Array<out String>?,
         sortOrder: String?
     ): Cursor? {
+        enforceFossifyCaller()
         return dbHelper.getGlobalConfigCursor()
     }
 
@@ -51,6 +54,7 @@ class MyContentProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<out String>?
     ): Int {
+        enforceFossifyCaller()
         return dbHelper.updatePreferences(contentValues!!)
     }
 
@@ -59,6 +63,7 @@ class MyContentProvider : ContentProvider() {
     override fun getType(uri: Uri) = ""
 
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor? {
+        enforceFossifyCaller()
         if (uriMatcher.match(uri) != FONTS_FILE) throw FileNotFoundException(uri.toString())
         val name = uri.lastPathSegment ?: throw FileNotFoundException(uri.toString())
         val safeName = File(name).name
@@ -79,6 +84,19 @@ class MyContentProvider : ContentProvider() {
                 if (!file.exists()) throw FileNotFoundException(uri.toString())
                 ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
             }
+        }
+    }
+
+    private fun enforceFossifyCaller() {
+        if (Binder.getCallingUid() == Process.myUid()) return
+
+        val callingPackages = context
+            ?.packageManager
+            ?.getPackagesForUid(Binder.getCallingUid())
+            .orEmpty()
+
+        if (callingPackages.none { it.startsWith("org.fossify.") }) {
+            throw SecurityException("Only Fossify apps can access the global theme provider")
         }
     }
 }
