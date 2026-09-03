@@ -9,11 +9,11 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.fossify.commons.activities.BaseComposeActivity
 import org.fossify.commons.compose.extensions.enableEdgeToEdgeSimple
-import org.fossify.commons.compose.theme.AppThemeSurface
 import org.fossify.commons.helpers.isTiramisuPlus
 import org.fossify.thankyou.extensions.config
 import org.fossify.thankyou.extensions.launchChangeAppLanguageIntent
 import org.fossify.thankyou.ui.screens.SettingsScreen
+import org.fossify.thankyou.ui.theme.ThemingThemeSurface
 import java.util.Locale
 import kotlin.system.exitProcess
 
@@ -25,7 +25,7 @@ class SettingsActivity : BaseComposeActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdgeSimple()
         setContent {
-            AppThemeSurface {
+            ThemingThemeSurface(settings = preferences.getThemeSettings()) {
                 val wasUseEnglishToggledFlow by preferences.wasUseEnglishToggledFlow
                     .collectAsStateWithLifecycle(preferences.wasUseEnglishToggled)
                 val useEnglishFlow by preferences.useEnglishFlow
