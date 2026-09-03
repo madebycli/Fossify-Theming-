@@ -8,7 +8,6 @@ import android.os.Build
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.ui.graphics.toArgb
-import org.fossify.commons.helpers.MyContentProvider
 import org.fossify.commons.helpers.MyContentProvider.COL_ACCENT_COLOR
 import org.fossify.commons.helpers.MyContentProvider.COL_APP_ICON_COLOR
 import org.fossify.commons.helpers.MyContentProvider.COL_BACKGROUND_COLOR
@@ -18,6 +17,7 @@ import org.fossify.commons.helpers.MyContentProvider.COL_TEXT_COLOR
 import org.fossify.commons.helpers.MyContentProvider.COL_THEME_TYPE
 import org.fossify.commons.helpers.MyContentProvider.GLOBAL_THEME_CUSTOM
 import org.fossify.commons.helpers.MyContentProvider.GLOBAL_THEME_SYSTEM
+import org.fossify.thankyou.contentproviders.MyContentProvider
 import org.fossify.thankyou.models.ThemeColorRole
 import org.fossify.thankyou.models.ThemeSettings
 
@@ -35,7 +35,6 @@ object ThemeSyncManager {
         )
 
         val values = ContentValues().apply {
-            // App icon choice is global and independent from dark/light app surfaces.
             put(COL_APP_ICON_COLOR, appIconColor)
 
             if (context.isSystemDarkMode()) {
@@ -57,7 +56,6 @@ object ThemeSyncManager {
                     resolve(context, settings, ThemeColorRole.TEXT, systemColors),
                 )
             } else {
-                // Light mode intentionally stays 100% Material You / system controlled.
                 put(COL_THEME_TYPE, GLOBAL_THEME_SYSTEM)
             }
 
@@ -66,7 +64,7 @@ object ThemeSyncManager {
 
         return runCatching {
             context.contentResolver.update(
-                MyContentProvider.MY_CONTENT_URI,
+                MyContentProvider.SETTINGS_URI,
                 values,
                 null,
                 null,
