@@ -18,7 +18,6 @@ private val knownFossifyPackages = setOf(
     "org.fossify.musicplayer",
     "org.fossify.notes",
     "org.fossify.phone",
-    "org.fossify.thankyou",
     "org.fossify.voicerecorder",
 )
 
