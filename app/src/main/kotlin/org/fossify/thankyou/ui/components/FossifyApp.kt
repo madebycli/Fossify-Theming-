@@ -62,12 +62,7 @@ internal fun FossifyApp(
             AppIcon(icon = app.icon, verified = verified)
         },
         supportingContent = {
-            AppInfo(
-                versionName = app.versionName,
-                packageName = packageName,
-                signerName = app.signerName,
-                installerName = app.installerName
-            )
+            AppInfo(app = app)
         },
         trailingContent = {
             TrailingContent(
@@ -130,28 +125,38 @@ private fun AppIcon(
 }
 
 @Composable
-private fun AppInfo(
-    versionName: String?,
-    packageName: String,
-    signerName: String?,
-    installerName: String?
-) {
+private fun AppInfo(app: FossifyApp) {
     Column {
+        if (app.verified) {
+            Text(
+                text = if (app.themingReady) {
+                    stringResource(R.string.theming_ready)
+                } else {
+                    stringResource(R.string.theming_reinstall_required)
+                },
+                color = if (app.themingReady) {
+                    SimpleTheme.colorScheme.primary
+                } else {
+                    SimpleTheme.colorScheme.error
+                },
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
         Text(
             text = stringResource(
                 R.string.version,
-                versionName ?: stringResource(org.fossify.commons.R.string.unknown)
+                app.versionName ?: stringResource(org.fossify.commons.R.string.unknown)
             )
         )
         Text(
-            text = stringResource(R.string.package_id, packageName),
+            text = stringResource(R.string.package_id, app.packageName),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
         Text(
             text = stringResource(
                 R.string.signed_by,
-                signerName ?: stringResource(org.fossify.commons.R.string.unknown)
+                app.signerName ?: stringResource(org.fossify.commons.R.string.unknown)
             ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -159,7 +164,7 @@ private fun AppInfo(
         Text(
             text = stringResource(
                 R.string.installed_by,
-                installerName ?: stringResource(org.fossify.commons.R.string.unknown)
+                app.installerName ?: stringResource(org.fossify.commons.R.string.unknown)
             ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -205,7 +210,8 @@ private fun PreviewFossifyApp(
             signerName = if (verified) "Fossify" else null,
             installerName = "Fossify Store",
             installerPackage = "org.fossify.store",
-            verified = verified
+            verified = verified,
+            themingReady = verified,
         ),
         launchApp = {},
         uninstallApp = {}
