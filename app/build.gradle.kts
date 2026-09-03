@@ -80,10 +80,8 @@ android {
     }
 
     buildTypes {
-        // Keep the exact upstream package ID even for debug builds. Stock Fossify apps
-        // explicitly look for org.fossify.thankyou before enabling global theming.
-        debug
-
+        // The default debug build intentionally has no applicationIdSuffix. Stock Fossify
+        // apps explicitly look for org.fossify.thankyou before enabling global theming.
         release {
             isMinifyEnabled = true
             proguardFiles(
