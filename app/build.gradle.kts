@@ -58,7 +58,6 @@ android {
         }
     }
 
-
     buildFeatures {
         viewBinding = true
         buildConfig = true
@@ -81,9 +80,10 @@ android {
     }
 
     buildTypes {
-        debug {
-            applicationIdSuffix = ".debug"
-        }
+        // Keep the exact upstream package ID even for debug builds. Stock Fossify apps
+        // explicitly look for org.fossify.thankyou before enabling global theming.
+        debug
+
         release {
             isMinifyEnabled = true
             proguardFiles(
