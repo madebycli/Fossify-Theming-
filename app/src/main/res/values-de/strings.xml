@@ -1,20 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_launcher_name">Fossify Theming</string>
-    <string name="main_text">Vielen Dank für deine Unterstützung!
-\n
-\nSchreibe uns doch an
-\n hello@fossify.org,
-\n wir freuen uns über jede Rückmeldung und jeden Vorschlag.
-\n
-\n(Bitte diese App installiert lassen, um den „Kaufen“-Dialog auszublenden und alle Features der App freizuschalten)</string>
-    <string name="show_checkmarks_on_switches">Häkchen bei Schaltern anzeigen</string>
     <string name="potentially_unsafe_apps">Unbekannte Fossify-Pakete</string>
     <string name="installed_fossify_apps">Installierte Fossify-Apps</string>
     <string name="package_id">Paket: %1$s</string>
     <string name="installed_by">Installiert von: %1$s</string>
     <string name="signed_by">Signiert von: %1$s</string>
-    <string name="main_donation_text">Fossify wird von Nutzern wie dir finanziert!\n\nDeine Spenden finanzieren Verbesserungen und neue Funktionen. Wir freuen uns über deine Unterstützung – bitte ziehe es in Erwägung, zu spenden!\n\nWir danken dir!</string>
     <string name="version">Version: %1$s</string>
 
     <string name="hybrid_theme_title">Systemfarben + eigene Anpassungen</string>
@@ -28,7 +19,7 @@
     <string name="color_text_label">Textfarbe</string>
     <string name="color_app_icon_label">App-Icon-Farbe</string>
     <string name="live_sync_title">Live-Sync</string>
-    <string name="live_sync_description">Hält die Fossify-Apps bei Wallpaper- und Hell/Dunkel-Wechseln automatisch synchron.</string>
+    <string name="live_sync_description">Aktualisiert das bereitgestellte Theme automatisch bei Wallpaper- und Hell/Dunkel-Wechseln.</string>
     <string name="apply_now">Jetzt anwenden</string>
     <string name="theme_applied">Theme angewendet</string>
     <string name="profiles_title">Profile</string>
@@ -41,7 +32,7 @@
     <string name="dark_mode_note">Der Light Mode bleibt vollständig beim normalen Material-You-Systemtheme. Eigene Farbwerte werden nur im Dark Mode verwendet.</string>
 
     <string name="live_sync_channel_name">Fossify-Theme-Synchronisierung</string>
-    <string name="live_sync_channel_description">Hintergrunddienst für wallpaperabhängige Fossify-Farben.</string>
+    <string name="live_sync_channel_description">Hintergrunddienst für wallpaperabhängige Theme-Farben.</string>
     <string name="live_sync_notification_title">Fossify Theming ist aktiv</string>
     <string name="live_sync_notification_text">Wallpaper- und Dark-Mode-Änderungen werden überwacht.</string>
 </resources>
