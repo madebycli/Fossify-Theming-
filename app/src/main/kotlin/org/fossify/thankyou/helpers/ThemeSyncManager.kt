@@ -1,15 +1,17 @@
 package org.fossify.thankyou.helpers
 
+import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
+import android.util.Log
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.ui.graphics.toArgb
 import org.fossify.commons.extensions.getAppIconColors
-import org.fossify.commons.extensions.toggleAppIconColor
 import org.fossify.commons.helpers.MyContentProvider.COL_ACCENT_COLOR
 import org.fossify.commons.helpers.MyContentProvider.COL_APP_ICON_COLOR
 import org.fossify.commons.helpers.MyContentProvider.COL_BACKGROUND_COLOR
@@ -19,6 +21,7 @@ import org.fossify.commons.helpers.MyContentProvider.COL_TEXT_COLOR
 import org.fossify.commons.helpers.MyContentProvider.COL_THEME_TYPE
 import org.fossify.commons.helpers.MyContentProvider.GLOBAL_THEME_CUSTOM
 import org.fossify.commons.helpers.MyContentProvider.GLOBAL_THEME_SYSTEM
+import org.fossify.commons.helpers.appIconColorStrings
 import org.fossify.thankyou.contentproviders.MyContentProvider
 import org.fossify.thankyou.models.ThemeColorRole
 import org.fossify.thankyou.models.ThemeSettings
@@ -113,16 +116,42 @@ object ThemeSyncManager {
     }
 
     private fun applyLocalAppIcon(context: Context, targetColor: Int) {
-        val appId = context.packageName
         val colors = context.getAppIconColors()
+        val packageManager = context.packageManager
 
         colors.forEachIndexed { index, color ->
-            context.toggleAppIconColor(appId, index, color, false)
+            setLauncherAliasEnabled(
+                context = context,
+                packageManager = packageManager,
+                colorIndex = index,
+                color = color,
+                enabled = color == targetColor,
+            )
         }
-        colors.forEachIndexed { index, color ->
-            if (color == targetColor) {
-                context.toggleAppIconColor(appId, index, color, true)
-            }
+    }
+
+    private fun setLauncherAliasEnabled(
+        context: Context,
+        packageManager: PackageManager,
+        colorIndex: Int,
+        color: Int,
+        enabled: Boolean,
+    ) {
+        val aliasClassName = "$LAUNCHER_ALIAS_PREFIX${appIconColorStrings[colorIndex]}"
+        val state = if (enabled) {
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        } else {
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        }
+
+        runCatching {
+            packageManager.setComponentEnabledSetting(
+                ComponentName(context.packageName, aliasClassName),
+                state,
+                PackageManager.DONT_KILL_APP,
+            )
+        }.onFailure { error ->
+            Log.w(TAG, "Unable to update launcher alias $aliasClassName for color $color", error)
         }
     }
 
@@ -144,4 +173,7 @@ object ThemeSyncManager {
         return resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
             Configuration.UI_MODE_NIGHT_YES
     }
+
+    private const val TAG = "ThemeSyncManager"
+    private const val LAUNCHER_ALIAS_PREFIX = "org.fossify.thankyou.activities.SplashActivity"
 }
