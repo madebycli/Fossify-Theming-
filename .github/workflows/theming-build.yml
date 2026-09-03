@@ -1,0 +1,37 @@
+name: Fossify Theming Build
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
+      - name: Build debug APKs
+        run: ./gradlew assembleCoreDebug assembleFossDebug --stacktrace
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: fossify-theming-debug-apks
+          path: |
+            app/build/outputs/apk/core/debug/*.apk
+            app/build/outputs/apk/foss/debug/*.apk
+          if-no-files-found: error
