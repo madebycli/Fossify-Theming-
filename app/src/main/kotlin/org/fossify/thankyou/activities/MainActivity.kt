@@ -13,6 +13,7 @@ import org.fossify.commons.activities.BaseComposeActivity
 import org.fossify.commons.compose.extensions.enableEdgeToEdgeSimple
 import org.fossify.commons.extensions.hideKeyboard
 import org.fossify.commons.extensions.toast
+import org.fossify.thankyou.BuildConfig
 import org.fossify.thankyou.R
 import org.fossify.thankyou.extensions.config
 import org.fossify.thankyou.extensions.getAllFossifyApps
@@ -73,11 +74,19 @@ class MainActivity : BaseComposeActivity() {
                     settings = settings,
                     profiles = profiles,
                     systemColors = systemColors,
+                    stockCompatibilityMode = BuildConfig.THEME_PROVIDER_AUTHORITY ==
+                        STOCK_PROVIDER_AUTHORITY,
                     onSettingsChanged = ::persistAndApply,
                     onApplyNow = {
-                        ThemeSyncManager.apply(this@MainActivity, settings)
+                        val applied = ThemeSyncManager.apply(this@MainActivity, settings)
                         systemColors = ThemeSyncManager.getSystemColors(this@MainActivity)
-                        toast(R.string.theme_applied)
+                        toast(
+                            if (applied) {
+                                R.string.theme_applied
+                            } else {
+                                R.string.theme_apply_failed
+                            }
+                        )
                     },
                     onSaveProfile = { name ->
                         preferences.saveThemeProfile(name, settings)
@@ -123,5 +132,6 @@ class MainActivity : BaseComposeActivity() {
 
     companion object {
         private const val UNINSTALL_APP_REQUEST_CODE = 50
+        private const val STOCK_PROVIDER_AUTHORITY = "org.fossify.android.provider"
     }
 }
