@@ -5,25 +5,40 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.app.WallpaperColors
+import android.app.WallpaperManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import org.fossify.thankyou.R
 import org.fossify.thankyou.activities.MainActivity
 import org.fossify.thankyou.helpers.ThemeSyncManager
 
 class ThemeSyncService : Service() {
+    private val mainHandler = Handler(Looper.getMainLooper())
+    private val delayedRefresh = Runnable { ThemeSyncManager.apply(this) }
+
+    private val wallpaperColorsListener = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+        WallpaperManager.OnColorsChangedListener { _: WallpaperColors?, _: Int ->
+            refreshThemeWithFollowUp()
+        }
+    } else {
+        null
+    }
+
     private val changesReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (
                 intent?.action == Intent.ACTION_WALLPAPER_CHANGED ||
                 intent?.action == Intent.ACTION_CONFIGURATION_CHANGED
             ) {
-                ThemeSyncManager.apply(this@ThemeSyncService)
+                refreshThemeWithFollowUp()
             }
         }
     }
@@ -33,16 +48,19 @@ class ThemeSyncService : Service() {
         createNotificationChannel()
         promoteToForeground()
         registerSystemChanges()
-        ThemeSyncManager.apply(this)
+        registerWallpaperColorsListener()
+        refreshThemeWithFollowUp()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        ThemeSyncManager.apply(this)
+        refreshThemeWithFollowUp()
         return START_STICKY
     }
 
     override fun onDestroy() {
+        mainHandler.removeCallbacks(delayedRefresh)
         runCatching { unregisterReceiver(changesReceiver) }
+        unregisterWallpaperColorsListener()
         super.onDestroy()
     }
 
@@ -60,6 +78,34 @@ class ThemeSyncService : Service() {
         } else {
             registerReceiver(changesReceiver, filter)
         }
+    }
+
+    private fun registerWallpaperColorsListener() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            wallpaperColorsListener?.let { listener ->
+                WallpaperManager.getInstance(this)
+                    .addOnColorsChangedListener(listener, mainHandler)
+            }
+        }
+    }
+
+    private fun unregisterWallpaperColorsListener() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            wallpaperColorsListener?.let { listener ->
+                runCatching {
+                    WallpaperManager.getInstance(this).removeOnColorsChangedListener(listener)
+                }
+            }
+        }
+    }
+
+    private fun refreshThemeWithFollowUp() {
+        ThemeSyncManager.apply(this)
+
+        // Pixel/Monet resources can update a little after the wallpaper callback. Re-read once
+        // more after a short delay so the global Fossify config receives the final palette.
+        mainHandler.removeCallbacks(delayedRefresh)
+        mainHandler.postDelayed(delayedRefresh, PALETTE_SETTLE_DELAY_MS)
     }
 
     private fun promoteToForeground() {
@@ -119,6 +165,7 @@ class ThemeSyncService : Service() {
     companion object {
         private const val CHANNEL_ID = "fossify_theming_live_sync"
         private const val NOTIFICATION_ID = 42017
+        private const val PALETTE_SETTLE_DELAY_MS = 1500L
 
         fun setEnabled(context: Context, enabled: Boolean) {
             val intent = Intent(context, ThemeSyncService::class.java)
