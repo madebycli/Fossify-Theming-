@@ -13,6 +13,7 @@ import android.os.ParcelFileDescriptor.MODE_WRITE_ONLY
 import android.os.Process
 import org.fossify.commons.extensions.isFontFile
 import org.fossify.thankyou.helpers.MyContentProviderHelper
+import org.fossify.thankyou.helpers.isKnownFossifyPackage
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -95,8 +96,8 @@ class MyContentProvider : ContentProvider() {
             ?.getPackagesForUid(Binder.getCallingUid())
             .orEmpty()
 
-        if (callingPackages.none { it.startsWith("org.fossify.") }) {
-            throw SecurityException("Only Fossify apps can access the global theme provider")
+        if (callingPackages.none(::isKnownFossifyPackage)) {
+            throw SecurityException("Only known Fossify apps can access the global theme provider")
         }
     }
 }
