@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_launcher_name">Thank You</string>
+    <string name="app_launcher_name">Fossify Theming</string>
     <string name="app_brand_name" translatable="false">Fossify Theming</string>
 
-    <string name="potentially_unsafe_apps">Potentially unsafe apps</string>
+    <string name="potentially_unsafe_apps">Unknown Fossify packages</string>
     <string name="installed_fossify_apps">Installed Fossify apps</string>
     <string name="version">Version: %1$s</string>
     <string name="package_id">Package: %1$s</string>
@@ -31,7 +31,7 @@
     <string name="profile_loaded">Profile loaded</string>
     <string name="delete_profile">Delete profile</string>
     <string name="no_profiles">No saved profiles yet.</string>
-    <string name="dark_mode_note">Light mode always stays on the normal system Material You theme. Custom overrides are applied only in dark mode.</string>
+    <string name="dark_mode_note">Light mode always stays on the normal system Material You theme. Custom overrides are applied only in dark mode. App-icon colors are matched to the nearest launcher color supported by Fossify.</string>
 
     <string name="live_sync_channel_name">Fossify theme sync</string>
     <string name="live_sync_channel_description">Background service for wallpaper-aware Fossify colors.</string>
