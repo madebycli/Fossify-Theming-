@@ -54,6 +54,7 @@ fun Context.getFakeFossifyApps(): List<FossifyApp> {
     return with(packageManager) {
         getInstalledPackages(0)
             .filter { it.packageName.startsWith("org.fossify.") }
+            .filterNot { it.packageName.removeSuffix(".debug") == "org.fossify.thankyou" }
             .filterNot { isKnownFossifyPackage(it.packageName) }
             .map {
                 val `package` = it.packageName
