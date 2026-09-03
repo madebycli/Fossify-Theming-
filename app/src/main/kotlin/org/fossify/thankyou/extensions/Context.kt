@@ -8,7 +8,6 @@ import android.os.Build
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import org.fossify.commons.activities.AboutActivity
-import org.fossify.commons.activities.CustomizationActivity
 import org.fossify.commons.extensions.hideKeyboard
 import org.fossify.commons.extensions.openDeviceSettings
 import org.fossify.commons.helpers.APP_FAQ
@@ -51,18 +50,6 @@ internal fun Activity.startAboutActivity(
         startActivity(this)
     }
 }
-
-internal fun Activity.startCustomizationActivity(
-    getAppIconIDs: ArrayList<Int> = getAppIconIDs(),
-    getAppLauncherName: String = launcherName()
-) {
-    Intent(applicationContext, CustomizationActivity::class.java).apply {
-        putExtra(APP_ICON_IDS, getAppIconIDs)
-        putExtra(APP_LAUNCHER_NAME, getAppLauncherName)
-        startActivity(this)
-    }
-}
-
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 internal fun Activity.launchChangeAppLanguageIntent() {
