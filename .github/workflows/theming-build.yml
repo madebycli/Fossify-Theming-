@@ -3,12 +3,14 @@ name: Fossify Theming Build
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'performance/**'
   pull_request:
     branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -48,3 +50,20 @@ jobs:
           name: fossify-theming-performance-apk
           path: app/build/outputs/apk/compat/performance/*.apk
           if-no-files-found: error
+
+      - name: Publish temporary performance APK to repository folder
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          mkdir -p performance
+          cp app/build/outputs/apk/compat/performance/*.apk \
+            performance/Fossify-Theming-compat-performance-temporary-signed.apk
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add performance/Fossify-Theming-compat-performance-temporary-signed.apk
+          if git diff --cached --quiet; then
+            echo "Performance APK is already current."
+            exit 0
+          fi
+          git commit -m "Update temporary performance APK [skip ci]"
+          git push
