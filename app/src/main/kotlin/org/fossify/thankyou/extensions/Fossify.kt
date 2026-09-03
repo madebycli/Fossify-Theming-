@@ -5,9 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.content.pm.PackageManager.SIGNATURE_MATCH
 import org.fossify.commons.extensions.getSignatures
 import org.fossify.commons.helpers.isRPlus
+import org.fossify.thankyou.helpers.isKnownFossifyPackage
 import org.fossify.thankyou.models.FossifyApp
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
@@ -29,10 +29,9 @@ fun Context.getFossifyAppsFlow(
 
 @SuppressLint("QueryPermissionsNeeded")
 fun Context.getAllFossifyApps(): List<FossifyApp> {
-    val packageName = packageName
     return with(packageManager) {
         getInstalledPackages(0)
-            .filter { checkSignatures(packageName, it.packageName) == SIGNATURE_MATCH }
+            .filter { isKnownFossifyPackage(it.packageName) }
             .map {
                 val `package` = it.packageName
                 val installerPackage = getInstallerPackage(`package`)
@@ -52,11 +51,10 @@ fun Context.getAllFossifyApps(): List<FossifyApp> {
 
 @SuppressLint("QueryPermissionsNeeded")
 fun Context.getFakeFossifyApps(): List<FossifyApp> {
-    val packageName = packageName
     return with(packageManager) {
         getInstalledPackages(0)
             .filter { it.packageName.startsWith("org.fossify.") }
-            .filter { checkSignatures(packageName, it.packageName) != SIGNATURE_MATCH }
+            .filterNot { isKnownFossifyPackage(it.packageName) }
             .map {
                 val `package` = it.packageName
                 val installerPackage = getInstallerPackage(`package`)
@@ -121,4 +119,3 @@ fun PackageManager.getSignerName(packageName: String?): String? {
 
     return null
 }
-
