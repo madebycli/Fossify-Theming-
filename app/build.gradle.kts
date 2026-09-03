@@ -36,6 +36,12 @@ android {
         targetSdk = project.libs.versions.app.build.targetSDK.get().toInt()
         versionName = project.property("VERSION_NAME").toString()
         versionCode = project.property("VERSION_CODE").toString().toInt()
+        manifestPlaceholders["themeProviderAuthority"] = "org.forfossify.theming.provider"
+        buildConfigField(
+            "String",
+            "THEME_PROVIDER_AUTHORITY",
+            "\"org.forfossify.theming.provider\"",
+        )
     }
 
     signingConfigs {
@@ -101,6 +107,15 @@ android {
         register("core")
         register("foss")
         register("gplay")
+        register("compat") {
+            applicationId = "org.fossify.thankyou"
+            manifestPlaceholders["themeProviderAuthority"] = "org.fossify.android.provider"
+            buildConfigField(
+                "String",
+                "THEME_PROVIDER_AUTHORITY",
+                "\"org.fossify.android.provider\"",
+            )
+        }
     }
 
     sourceSets {
