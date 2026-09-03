@@ -11,22 +11,18 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.fossify.commons.activities.BaseComposeActivity
 import org.fossify.commons.compose.extensions.enableEdgeToEdgeSimple
-import org.fossify.commons.compose.theme.AppThemeSurface
 import org.fossify.commons.extensions.hideKeyboard
 import org.fossify.commons.extensions.toast
-import org.fossify.commons.models.FAQItem
-import org.fossify.thankyou.BuildConfig
 import org.fossify.thankyou.R
 import org.fossify.thankyou.extensions.config
 import org.fossify.thankyou.extensions.getAllFossifyApps
 import org.fossify.thankyou.extensions.getFakeFossifyApps
 import org.fossify.thankyou.extensions.getFossifyAppsFlow
-import org.fossify.thankyou.extensions.startAboutActivity
-import org.fossify.thankyou.helpers.REPOSITORY_NAME
 import org.fossify.thankyou.helpers.ThemeSyncManager
 import org.fossify.thankyou.models.ThemeSettings
 import org.fossify.thankyou.services.ThemeSyncService
 import org.fossify.thankyou.ui.screens.MainScreen
+import org.fossify.thankyou.ui.theme.ThemingThemeSurface
 
 class MainActivity : BaseComposeActivity() {
     private val preferences by lazy { config }
@@ -44,13 +40,13 @@ class MainActivity : BaseComposeActivity() {
         }
 
         setContent {
-            AppThemeSurface {
-                var settings by remember { mutableStateOf(preferences.getThemeSettings()) }
-                var profiles by remember { mutableStateOf(preferences.getThemeProfiles()) }
-                var systemColors by remember {
-                    mutableStateOf(ThemeSyncManager.getSystemColors(this@MainActivity))
-                }
+            var settings by remember { mutableStateOf(preferences.getThemeSettings()) }
+            var profiles by remember { mutableStateOf(preferences.getThemeProfiles()) }
+            var systemColors by remember {
+                mutableStateOf(ThemeSyncManager.getSystemColors(this@MainActivity))
+            }
 
+            ThemingThemeSurface(settings = settings) {
                 val allApps by allAppsFlow.collectAsStateWithLifecycle(listOf())
                 val fakeApps by fakeAppsFlow.collectAsStateWithLifecycle(listOf())
 
@@ -97,7 +93,6 @@ class MainActivity : BaseComposeActivity() {
                         profiles = preferences.getThemeProfiles()
                     },
                     openSettings = ::launchSettings,
-                    openAbout = ::launchAbout,
                     launchApp = ::launchApp,
                     uninstallApp = ::uninstallApp,
                 )
@@ -108,18 +103,6 @@ class MainActivity : BaseComposeActivity() {
     private fun launchSettings() {
         hideKeyboard()
         startActivity(Intent(this, SettingsActivity::class.java))
-    }
-
-    private fun launchAbout() {
-        startAboutActivity(
-            appNameId = R.string.app_brand_name,
-            licenseMask = 0,
-            versionName = BuildConfig.VERSION_NAME,
-            packageName = packageName,
-            repositoryName = REPOSITORY_NAME,
-            faqItems = ArrayList<FAQItem>(),
-            showFAQBeforeMail = false,
-        )
     }
 
     private fun launchApp(packageName: String) {
