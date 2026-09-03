@@ -1,6 +1,8 @@
 name: Fossify Theming Build
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -27,7 +29,10 @@ jobs:
       - name: Build debug APKs
         run: ./gradlew assembleCoreDebug assembleFossDebug assembleCompatDebug --stacktrace
 
-      - name: Upload APKs
+      - name: Build optimized compatibility APK
+        run: ./gradlew assembleCompatPerformance --stacktrace
+
+      - name: Upload debug APKs
         uses: actions/upload-artifact@v4
         with:
           name: fossify-theming-debug-apks
@@ -35,4 +40,11 @@ jobs:
             app/build/outputs/apk/core/debug/*.apk
             app/build/outputs/apk/foss/debug/*.apk
             app/build/outputs/apk/compat/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload performance APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: fossify-theming-performance-apk
+          path: app/build/outputs/apk/compat/performance/*.apk
           if-no-files-found: error
