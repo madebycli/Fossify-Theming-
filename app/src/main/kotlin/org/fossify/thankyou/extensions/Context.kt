@@ -85,4 +85,4 @@ private fun getAppIconIDs() = arrayListOf(
     R.mipmap.ic_launcher_grey_black
 )
 
-private fun Context.launcherName() = getString(R.string.app_launcher_name)
+private fun Context.launcherName() = getString(R.string.app_brand_name)
