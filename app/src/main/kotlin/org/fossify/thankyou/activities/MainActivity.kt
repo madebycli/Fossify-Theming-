@@ -4,32 +4,17 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.collections.immutable.toImmutableList
 import org.fossify.commons.activities.BaseComposeActivity
-import org.fossify.commons.activities.DonationActivity
-import org.fossify.commons.compose.alert_dialog.AlertDialogState
-import org.fossify.commons.compose.alert_dialog.rememberAlertDialogState
-import org.fossify.commons.compose.extensions.appLaunchedCompose
-import org.fossify.commons.compose.extensions.checkWhatsNewCompose
 import org.fossify.commons.compose.extensions.enableEdgeToEdgeSimple
-import org.fossify.commons.compose.extensions.linkColor
-import org.fossify.commons.compose.extensions.onEventValue
 import org.fossify.commons.compose.theme.AppThemeSurface
-import org.fossify.commons.dialogs.DonateAlertDialog
-import org.fossify.commons.dialogs.WhatsNewAlertDialog
 import org.fossify.commons.extensions.hideKeyboard
-import org.fossify.commons.extensions.launchMoreAppsFromUsIntent
 import org.fossify.commons.extensions.toast
 import org.fossify.commons.models.FAQItem
-import org.fossify.commons.models.Release
 import org.fossify.thankyou.BuildConfig
 import org.fossify.thankyou.R
 import org.fossify.thankyou.extensions.config
@@ -38,10 +23,12 @@ import org.fossify.thankyou.extensions.getFakeFossifyApps
 import org.fossify.thankyou.extensions.getFossifyAppsFlow
 import org.fossify.thankyou.extensions.startAboutActivity
 import org.fossify.thankyou.helpers.REPOSITORY_NAME
+import org.fossify.thankyou.helpers.ThemeSyncManager
+import org.fossify.thankyou.models.ThemeSettings
+import org.fossify.thankyou.services.ThemeSyncService
 import org.fossify.thankyou.ui.screens.MainScreen
 
 class MainActivity : BaseComposeActivity() {
-
     private val preferences by lazy { config }
     private val allAppsFlow by lazy { getFossifyAppsFlow(::getAllFossifyApps) }
     private val fakeAppsFlow by lazy { getFossifyAppsFlow(::getFakeFossifyApps) }
@@ -49,133 +36,89 @@ class MainActivity : BaseComposeActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdgeSimple()
+
+        val initialSettings = preferences.getThemeSettings()
+        ThemeSyncManager.apply(this, initialSettings)
+        if (initialSettings.liveSyncEnabled) {
+            runCatching { ThemeSyncService.setEnabled(this, true) }
+        }
+
         setContent {
             AppThemeSurface {
-                val releasesList = remember { mutableStateListOf<Release>() }
-                val checkWhatsNewAlertDialogState = getCheckWhatsNewAlertDialogState(releasesList)
-                val linkColor = linkColor()
-                val showMoreApps =
-                    onEventValue { !resources.getBoolean(org.fossify.commons.R.bool.hide_google_relations) }
-
-                val showThankYouNotice by preferences.showThankYouNoticeFlow
-                    .collectAsStateWithLifecycle(preferences.showThankYouNotice)
+                var settings by remember { mutableStateOf(preferences.getThemeSettings()) }
+                var profiles by remember { mutableStateOf(preferences.getThemeProfiles()) }
+                var systemColors by remember {
+                    mutableStateOf(ThemeSyncManager.getSystemColors(this@MainActivity))
+                }
 
                 val allApps by allAppsFlow.collectAsStateWithLifecycle(listOf())
                 val fakeApps by fakeAppsFlow.collectAsStateWithLifecycle(listOf())
 
+                fun persistAndApply(updated: ThemeSettings) {
+                    val liveSyncChanged = settings.liveSyncEnabled != updated.liveSyncEnabled
+                    settings = updated
+                    preferences.saveThemeSettings(updated)
+                    ThemeSyncManager.apply(this@MainActivity, updated)
+                    systemColors = ThemeSyncManager.getSystemColors(this@MainActivity)
+
+                    if (liveSyncChanged) {
+                        runCatching {
+                            ThemeSyncService.setEnabled(
+                                this@MainActivity,
+                                updated.liveSyncEnabled,
+                            )
+                        }
+                    }
+                }
+
                 MainScreen(
                     allApps = allApps,
                     fakeApps = fakeApps,
-                    linkColor = linkColor,
-                    showGoogleRelations = showMoreApps,
-                    showThankYouNotice = showThankYouNotice,
+                    settings = settings,
+                    profiles = profiles,
+                    systemColors = systemColors,
+                    onSettingsChanged = ::persistAndApply,
+                    onApplyNow = {
+                        ThemeSyncManager.apply(this@MainActivity, settings)
+                        systemColors = ThemeSyncManager.getSystemColors(this@MainActivity)
+                        toast(R.string.theme_applied)
+                    },
+                    onSaveProfile = { name ->
+                        preferences.saveThemeProfile(name, settings)
+                        profiles = preferences.getThemeProfiles()
+                        toast(R.string.profile_saved)
+                    },
+                    onLoadProfile = { profile ->
+                        persistAndApply(profile.settings)
+                        toast(R.string.profile_loaded)
+                    },
+                    onDeleteProfile = { profile ->
+                        preferences.deleteThemeProfile(profile.name)
+                        profiles = preferences.getThemeProfiles()
+                    },
                     openSettings = ::launchSettings,
                     openAbout = ::launchAbout,
-                    moreAppsFromUs = ::launchMoreAppsFromUsIntent,
                     launchApp = ::launchApp,
                     uninstallApp = ::uninstallApp,
-                    hideThankYouNotice = {
-                        preferences.showThankYouNotice = false
-                    },
-                    onDonateClicked = ::launchDonationActivity
-                )
-
-                AppLaunched()
-                CheckWhatsNew(
-                    releasesList = releasesList,
-                    checkWhatsNewAlertDialogState = checkWhatsNewAlertDialogState
                 )
             }
         }
     }
-
-    @Composable
-    private fun AppLaunched(
-        donateAlertDialogState: AlertDialogState = getDonateAlertDialogState(),
-    ) {
-        LaunchedEffect(Unit) {
-            appLaunchedCompose(
-                appId = BuildConfig.APPLICATION_ID,
-                showDonateDialog = donateAlertDialogState::show,
-                showUpgradeDialog = {}
-            )
-        }
-    }
-
-    @Composable
-    private fun CheckWhatsNew(
-        releasesList: SnapshotStateList<Release>,
-        checkWhatsNewAlertDialogState: AlertDialogState,
-    ) {
-        DisposableEffect(Unit) {
-            checkWhatsNewCompose(
-                releases = listOf(),
-                currVersion = BuildConfig.VERSION_CODE,
-                showWhatsNewDialog = { releases ->
-                    releasesList.addAll(releases)
-                    checkWhatsNewAlertDialogState.show()
-                }
-            )
-            onDispose {
-                releasesList.clear()
-            }
-        }
-    }
-
-    @Composable
-    private fun getCheckWhatsNewAlertDialogState(releasesList: SnapshotStateList<Release>) =
-        rememberAlertDialogState().apply {
-            DialogMember {
-                WhatsNewAlertDialog(
-                    alertDialogState = this,
-                    releases = releasesList.toImmutableList()
-                )
-            }
-        }
-
-    @Composable
-    private fun getDonateAlertDialogState() =
-        rememberAlertDialogState().apply {
-            DialogMember {
-                DonateAlertDialog(alertDialogState = this)
-            }
-        }
 
     private fun launchSettings() {
         hideKeyboard()
         startActivity(Intent(this, SettingsActivity::class.java))
     }
 
-    private fun launchDonationActivity() {
-        hideKeyboard()
-        startActivity(Intent(this, DonationActivity::class.java))
-    }
-
     private fun launchAbout() {
-        val faqItems = ArrayList<FAQItem>()
-        if (!resources.getBoolean(org.fossify.commons.R.bool.hide_google_relations)) {
-            faqItems.add(
-                FAQItem(
-                    title = org.fossify.commons.R.string.faq_2_title_commons,
-                    text = org.fossify.commons.R.string.faq_2_text_commons
-                )
-            )
-            faqItems.add(
-                FAQItem(
-                    title = org.fossify.commons.R.string.faq_6_title_commons,
-                    text = org.fossify.commons.R.string.faq_6_text_commons
-                )
-            )
-        }
-
         startAboutActivity(
-            appNameId = R.string.app_name,
+            appNameId = R.string.app_brand_name,
             licenseMask = 0,
             versionName = BuildConfig.VERSION_NAME,
             packageName = packageName,
             repositoryName = REPOSITORY_NAME,
-            faqItems = faqItems,
-            showFAQBeforeMail = false
+            faqItems = ArrayList<FAQItem>(),
+            showFAQBeforeMail = false,
         )
     }
 
@@ -183,9 +126,7 @@ class MainActivity : BaseComposeActivity() {
         if (packageName == this.packageName) {
             toast(org.fossify.commons.R.string.hello)
         } else {
-            startActivity(
-                packageManager.getLaunchIntentForPackage(packageName)
-            )
+            packageManager.getLaunchIntentForPackage(packageName)?.let(::startActivity)
         }
     }
 
