@@ -6,11 +6,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
-    <permission
-        android:name="org.fossify.android.permission.WRITE_GLOBAL_SETTINGS"
-        android:protectionLevel="normal"
-        tools:replace="android:protectionLevel" />
-
     <application
         android:label="@string/app_brand_name"
         tools:replace="android:label">
