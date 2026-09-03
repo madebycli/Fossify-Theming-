@@ -24,7 +24,7 @@ fun hasSigningVars(): Boolean {
 
 base {
     val versionCode = project.property("VERSION_CODE").toString().toInt()
-    archivesName = "thankyou-$versionCode"
+    archivesName = "fossify-theming-$versionCode"
 }
 
 android {
@@ -36,6 +36,12 @@ android {
         targetSdk = project.libs.versions.app.build.targetSDK.get().toInt()
         versionName = project.property("VERSION_NAME").toString()
         versionCode = project.property("VERSION_CODE").toString().toInt()
+        manifestPlaceholders["themeProviderAuthority"] = "org.forfossify.theming.provider"
+        buildConfigField(
+            "String",
+            "THEME_PROVIDER_AUTHORITY",
+            "\"org.forfossify.theming.provider\"",
+        )
     }
 
     signingConfigs {
@@ -57,7 +63,6 @@ android {
             logger.warn("Warning: No signing config found. Build will be unsigned.")
         }
     }
-
 
     buildFeatures {
         viewBinding = true
@@ -81,11 +86,13 @@ android {
     }
 
     buildTypes {
+        // Keep one stable standalone application ID for local testing and release builds.
         debug {
-            applicationIdSuffix = ".debug"
+            applicationIdSuffix = null
         }
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -94,6 +101,14 @@ android {
                 signingConfig = signingConfigs.getByName("release")
             }
         }
+        create("performance") {
+            initWith(getByName("release"))
+            isDebuggable = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+        }
     }
 
     flavorDimensions.add("variants")
@@ -101,6 +116,15 @@ android {
         register("core")
         register("foss")
         register("gplay")
+        register("compat") {
+            applicationId = "org.fossify.thankyou"
+            manifestPlaceholders["themeProviderAuthority"] = "org.fossify.android.provider"
+            buildConfigField(
+                "String",
+                "THEME_PROVIDER_AUTHORITY",
+                "\"org.fossify.android.provider\"",
+            )
+        }
     }
 
     sourceSets {
@@ -123,7 +147,9 @@ android {
         generateLocaleConfig = true
     }
 
-    namespace = project.property("APP_ID").toString()
+    // Kotlin source packages are migrated separately from the Android application ID.
+    // This namespace is not the installed package name.
+    namespace = "org.fossify.thankyou"
 
     lint {
         checkReleaseBuilds = false

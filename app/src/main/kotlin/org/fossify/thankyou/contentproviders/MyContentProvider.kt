@@ -5,12 +5,16 @@ import android.content.ContentValues
 import android.content.UriMatcher
 import android.database.Cursor
 import android.net.Uri
+import android.os.Binder
 import android.os.ParcelFileDescriptor
 import android.os.ParcelFileDescriptor.MODE_CREATE
 import android.os.ParcelFileDescriptor.MODE_TRUNCATE
 import android.os.ParcelFileDescriptor.MODE_WRITE_ONLY
+import android.os.Process
 import org.fossify.commons.extensions.isFontFile
+import org.fossify.thankyou.BuildConfig
 import org.fossify.thankyou.helpers.MyContentProviderHelper
+import org.fossify.thankyou.helpers.isKnownFossifyPackage
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -18,7 +22,9 @@ class MyContentProvider : ContentProvider() {
     private lateinit var dbHelper: MyContentProviderHelper
 
     companion object {
-        private const val AUTHORITY = "org.fossify.android.provider"
+        val AUTHORITY: String = BuildConfig.THEME_PROVIDER_AUTHORITY
+        val SETTINGS_URI: Uri = Uri.parse("content://$AUTHORITY/settings")
+
         private const val SETTINGS = 1
         private const val FONTS_FILE = 2
 
@@ -37,6 +43,7 @@ class MyContentProvider : ContentProvider() {
         selectionArgs: Array<out String>?,
         sortOrder: String?
     ): Cursor? {
+        enforceFossifyCaller()
         return dbHelper.getGlobalConfigCursor()
     }
 
@@ -51,6 +58,7 @@ class MyContentProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<out String>?
     ): Int {
+        enforceFossifyCaller()
         return dbHelper.updatePreferences(contentValues!!)
     }
 
@@ -59,6 +67,7 @@ class MyContentProvider : ContentProvider() {
     override fun getType(uri: Uri) = ""
 
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor? {
+        enforceFossifyCaller()
         if (uriMatcher.match(uri) != FONTS_FILE) throw FileNotFoundException(uri.toString())
         val name = uri.lastPathSegment ?: throw FileNotFoundException(uri.toString())
         val safeName = File(name).name
@@ -79,6 +88,19 @@ class MyContentProvider : ContentProvider() {
                 if (!file.exists()) throw FileNotFoundException(uri.toString())
                 ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
             }
+        }
+    }
+
+    private fun enforceFossifyCaller() {
+        if (Binder.getCallingUid() == Process.myUid()) return
+
+        val callingPackages = context
+            ?.packageManager
+            ?.getPackagesForUid(Binder.getCallingUid())
+            .orEmpty()
+
+        if (callingPackages.none(::isKnownFossifyPackage)) {
+            throw SecurityException("Only known Fossify apps can access the theme provider")
         }
     }
 }

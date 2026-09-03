@@ -1,19 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_launcher_name">Thank You</string>
-    <string name="main_donation_text">Fossify is funded by users like you!\n\nYour donations fuel improvements and new features. We appreciate your support—please consider contributing!\n\nThank you!</string>
-    <string name="main_text">Thank you for supporting us!\n\nDrop us a line at \n hello@fossify.org,\n we\'d love to hear all your feedback and suggestions.\n\n(Please keep the app installed to keep all app features unlocked)</string>
-    <string name="potentially_unsafe_apps">Potentially unsafe apps</string>
+    <string name="app_launcher_name">Fossify Theming</string>
+    <string name="app_brand_name" translatable="false">Fossify Theming</string>
+
+    <string name="potentially_unsafe_apps">Unknown Fossify packages</string>
     <string name="installed_fossify_apps">Installed Fossify apps</string>
     <string name="version">Version: %1$s</string>
     <string name="package_id">Package: %1$s</string>
     <string name="installed_by">Installed by: %1$s</string>
     <string name="signed_by">Signed by: %1$s</string>
+    <string name="theming_ready">Theming ready</string>
+    <string name="theming_reinstall_required">Reinstall required for theming</string>
 
-    <!-- Settings -->
-    <string name="show_checkmarks_on_switches">Show checkmarks on switches</string>
-    <!--
-        Haven't found some strings? There's more at
-        https://github.com/FossifyOrg/Commons/tree/master/commons/src/main/res
-    -->
+    <string name="hybrid_theme_title">System colors + your overrides</string>
+    <string name="hybrid_theme_description">Wallpaper colors stay dynamic. Set any individual color to Custom to override only that role.</string>
+    <string name="use_system_color">System</string>
+    <string name="use_custom_color">Custom</string>
+    <string name="system_color_value">System · %1$s</string>
+    <string name="color_primary_label">Primary color</string>
+    <string name="color_accent_label">Accent color</string>
+    <string name="color_background_label">Background · dark mode only</string>
+    <string name="color_text_label">Text color</string>
+    <string name="color_app_icon_label">App icon color</string>
+    <string name="live_sync_title">Live Sync</string>
+    <string name="live_sync_description">Refreshes the exported theme when your wallpaper or light/dark mode changes.</string>
+    <string name="apply_now">Apply now</string>
+    <string name="theme_applied">Theme applied</string>
+    <string name="theme_apply_failed">Theme could not be written to the provider</string>
+    <string name="profiles_title">Profiles</string>
+    <string name="profile_name">Profile name</string>
+    <string name="save_profile">Save</string>
+    <string name="profile_saved">Profile saved</string>
+    <string name="profile_loaded">Profile loaded</string>
+    <string name="delete_profile">Delete profile</string>
+    <string name="no_profiles">No saved profiles yet.</string>
+    <string name="dark_mode_note">Light mode always stays on the normal system Material You theme. Custom overrides are applied only in dark mode. App-icon colors are matched to the nearest launcher color supported by Fossify.</string>
+
+    <string name="theming_compatibility_title">Fossify app sync</string>
+    <string name="theming_compatibility_standalone">This standalone build themes itself. Stock Fossify apps need the compatibility build or a future Commons-based integration.</string>
+    <string name="theming_compatibility_no_apps">No supported Fossify apps are installed yet.</string>
+    <string name="theming_compatibility_all_ready">All %1$d installed Fossify apps are ready for theming.</string>
+    <string name="theming_compatibility_partial">%1$d of %2$d installed Fossify apps are ready.</string>
+    <string name="theming_compatibility_reinstall_hint">%1$d app(s) were installed before Fossify Theming. Reinstall those apps once so Android grants the global-theme permission.</string>
+
+    <string name="live_sync_channel_name">Fossify theme sync</string>
+    <string name="live_sync_channel_description">Background service for wallpaper-aware theme colors.</string>
+    <string name="live_sync_notification_title">Fossify Theming is active</string>
+    <string name="live_sync_notification_text">Watching wallpaper and dark-mode changes.</string>
 </resources>
