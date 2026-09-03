@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+
+    <permission
+        android:name="org.fossify.android.permission.WRITE_GLOBAL_SETTINGS"
+        android:protectionLevel="normal"
+        tools:replace="android:protectionLevel" />
+
+    <application
+        android:label="@string/app_brand_name"
+        tools:replace="android:label">
+
+        <service
+            android:name="org.fossify.thankyou.services.ThemeSyncService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Keeps Fossify Material You theme overrides synchronized with wallpaper and dark-mode changes." />
+        </service>
+
+        <receiver
+            android:name="org.fossify.thankyou.receivers.ThemeSyncBootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
