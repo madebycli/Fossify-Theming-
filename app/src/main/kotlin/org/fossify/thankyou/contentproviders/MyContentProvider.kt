@@ -21,7 +21,9 @@ class MyContentProvider : ContentProvider() {
     private lateinit var dbHelper: MyContentProviderHelper
 
     companion object {
-        private const val AUTHORITY = "org.fossify.android.provider"
+        const val AUTHORITY = "org.forfossify.theming.provider"
+        val SETTINGS_URI: Uri = Uri.parse("content://$AUTHORITY/settings")
+
         private const val SETTINGS = 1
         private const val FONTS_FILE = 2
 
@@ -97,7 +99,7 @@ class MyContentProvider : ContentProvider() {
             .orEmpty()
 
         if (callingPackages.none(::isKnownFossifyPackage)) {
-            throw SecurityException("Only known Fossify apps can access the global theme provider")
+            throw SecurityException("Only known Fossify apps can access the theme provider")
         }
     }
 }
