@@ -25,7 +25,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build debug APKs
-        run: ./gradlew assembleCoreDebug assembleFossDebug --stacktrace
+        run: ./gradlew assembleCoreDebug assembleFossDebug assembleCompatDebug --stacktrace
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
@@ -34,4 +34,5 @@ jobs:
           path: |
             app/build/outputs/apk/core/debug/*.apk
             app/build/outputs/apk/foss/debug/*.apk
+            app/build/outputs/apk/compat/debug/*.apk
           if-no-files-found: error
