@@ -12,6 +12,7 @@ import android.os.ParcelFileDescriptor.MODE_TRUNCATE
 import android.os.ParcelFileDescriptor.MODE_WRITE_ONLY
 import android.os.Process
 import org.fossify.commons.extensions.isFontFile
+import org.fossify.thankyou.BuildConfig
 import org.fossify.thankyou.helpers.MyContentProviderHelper
 import org.fossify.thankyou.helpers.isKnownFossifyPackage
 import java.io.File
@@ -21,7 +22,7 @@ class MyContentProvider : ContentProvider() {
     private lateinit var dbHelper: MyContentProviderHelper
 
     companion object {
-        const val AUTHORITY = "org.forfossify.theming.provider"
+        val AUTHORITY: String = BuildConfig.THEME_PROVIDER_AUTHORITY
         val SETTINGS_URI: Uri = Uri.parse("content://$AUTHORITY/settings")
 
         private const val SETTINGS = 1
