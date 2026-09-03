@@ -21,7 +21,7 @@
     <string name="color_text_label">Text color</string>
     <string name="color_app_icon_label">App icon color</string>
     <string name="live_sync_title">Live Sync</string>
-    <string name="live_sync_description">Keeps Fossify apps in sync when your wallpaper or light/dark mode changes.</string>
+    <string name="live_sync_description">Refreshes the exported theme when your wallpaper or light/dark mode changes.</string>
     <string name="apply_now">Apply now</string>
     <string name="theme_applied">Theme applied</string>
     <string name="profiles_title">Profiles</string>
@@ -34,10 +34,7 @@
     <string name="dark_mode_note">Light mode always stays on the normal system Material You theme. Custom overrides are applied only in dark mode. App-icon colors are matched to the nearest launcher color supported by Fossify.</string>
 
     <string name="live_sync_channel_name">Fossify theme sync</string>
-    <string name="live_sync_channel_description">Background service for wallpaper-aware Fossify colors.</string>
+    <string name="live_sync_channel_description">Background service for wallpaper-aware theme colors.</string>
     <string name="live_sync_notification_title">Fossify Theming is active</string>
     <string name="live_sync_notification_text">Watching wallpaper and dark-mode changes.</string>
-
-    <!-- Settings -->
-    <string name="show_checkmarks_on_switches">Show checkmarks on switches</string>
 </resources>
