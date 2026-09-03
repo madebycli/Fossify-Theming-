@@ -77,6 +77,7 @@ internal fun MainScreen(
     settings: ThemeSettings,
     profiles: List<ThemeProfile>,
     systemColors: Map<ThemeColorRole, Int>,
+    stockCompatibilityMode: Boolean,
     onSettingsChanged: (ThemeSettings) -> Unit,
     onApplyNow: () -> Unit,
     onSaveProfile: (String) -> Unit,
@@ -144,6 +145,13 @@ internal fun MainScreen(
                 )
             }
 
+            item(key = "theme_compatibility") {
+                ThemeCompatibilityCard(
+                    apps = allApps,
+                    stockCompatibilityMode = stockCompatibilityMode,
+                )
+            }
+
             fossifyApps(
                 titleId = R.string.potentially_unsafe_apps,
                 apps = fakeApps,
@@ -157,6 +165,85 @@ internal fun MainScreen(
                 launchApp = launchApp,
                 uninstallApp = uninstallApp,
             )
+        }
+    }
+}
+
+@Composable
+private fun ThemeCompatibilityCard(
+    apps: List<FossifyApp>,
+    stockCompatibilityMode: Boolean,
+) {
+    val readyCount = apps.count { it.themingReady }
+    val missingCount = apps.size - readyCount
+    val allReady = apps.isNotEmpty() && missingCount == 0
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (stockCompatibilityMode && allReady) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceContainerHigh
+            },
+        ),
+    ) {
+        Column(
+            modifier = Modifier.padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.theming_compatibility_title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+            )
+
+            when {
+                !stockCompatibilityMode -> {
+                    Text(
+                        text = stringResource(R.string.theming_compatibility_standalone),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+
+                apps.isEmpty() -> {
+                    Text(
+                        text = stringResource(R.string.theming_compatibility_no_apps),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+
+                allReady -> {
+                    Text(
+                        text = stringResource(
+                            R.string.theming_compatibility_all_ready,
+                            readyCount,
+                        ),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+
+                else -> {
+                    Text(
+                        text = stringResource(
+                            R.string.theming_compatibility_partial,
+                            readyCount,
+                            apps.size,
+                        ),
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.theming_compatibility_reinstall_hint,
+                            missingCount,
+                        ),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+            }
         }
     }
 }
@@ -468,12 +555,14 @@ private fun MainScreenPreview(
                     installerName = "Fossify Store",
                     installerPackage = "org.fossify.store",
                     verified = true,
+                    themingReady = true,
                 )
             ),
             fakeApps = emptyList(),
             settings = ThemeSettings(),
             profiles = emptyList(),
             systemColors = ThemeColorRole.entries.associateWith { 0xFF234B60.toInt() },
+            stockCompatibilityMode = true,
             onSettingsChanged = {},
             onApplyNow = {},
             onSaveProfile = {},
