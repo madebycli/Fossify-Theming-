@@ -33,5 +33,15 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
+
+        <activity-alias
+            android:name=".activities.SplashActivity.Green"
+            android:enabled="false"
+            tools:replace="android:enabled" />
+
+        <activity-alias
+            android:name=".activities.SplashActivity.Grey_black"
+            android:enabled="true"
+            tools:replace="android:enabled" />
     </application>
 </manifest>
