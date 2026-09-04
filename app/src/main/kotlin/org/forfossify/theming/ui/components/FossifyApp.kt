@@ -206,7 +206,7 @@ private fun PreviewFossifyApp(
             name = "Fossify Theming",
             icon = AppCompatResources.getDrawable(LocalContext.current, R.mipmap.ic_launcher),
             packageName = "org.forfossify.theming",
-            versionName = "1.2.1",
+            versionName = "0.1.0",
             signerName = if (verified) "Fossify" else null,
             installerName = "Fossify Store",
             installerPackage = "org.fossify.store",
