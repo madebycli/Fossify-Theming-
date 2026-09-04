@@ -1,0 +1,49 @@
+name: One-time stale translation cleanup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-time-translation-cleanup.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Remove inherited Thank You translations
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # English default and German have been rewritten for Fossify Theming.
+          # Every other localized strings.xml is inherited Thank You product copy,
+          # including donation/unlock text and wrong launcher names.
+          while IFS= read -r -d '' file; do
+            case "$file" in
+              app/src/main/res/values-de/strings.xml) ;;
+              *) git rm "$file" ;;
+            esac
+          done < <(find app/src/main/res -mindepth 2 -maxdepth 2 -type f -name strings.xml -path '*/values-*/*' -print0)
+
+          git rm .github/workflows/one-time-translation-cleanup.yml
+
+          echo 'Remaining product-copy audit:'
+          grep -RIn --exclude='*.apk' -E 'main_donation_text|main_text|UNLOCK EVERY FEATURE|Fossify Thank You|Merci pour votre soutien' app/src/main README.md PLAN.md MODIFICATIONS.md UPSTREAM.md || true
+
+      - name: Commit cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Remove inherited Thank You translations"
+          git push origin HEAD:main
