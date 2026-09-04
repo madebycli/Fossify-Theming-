@@ -23,6 +23,8 @@ There are only two distribution flavors:
 - `standalone`: application ID `org.forfossify.theming`, provider `org.forfossify.theming.provider`. This is the clean long-term app identity and can coexist with official Fossify Thank You.
 - `compat`: application ID `org.fossify.thankyou`, provider `org.fossify.android.provider`. This exists only so unmodified stock Fossify apps can consume the theme today.
 
+The Kotlin/Compose source namespace is `org.forfossify.theming`. The legacy `org.fossify.thankyou` identifier remains only where the stock-compatibility contract explicitly requires it.
+
 The optimized temporary test build is `compatPerformance`. It is R8/minified, resource-shrunk, non-debuggable and currently signed only with the Android debug key. The real release key will be configured later.
 
 ### Stock compatibility note
