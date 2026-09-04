@@ -86,7 +86,6 @@ android {
     }
 
     buildTypes {
-        // Keep one stable standalone application ID for local testing and release builds.
         debug {
             applicationIdSuffix = null
         }
@@ -111,12 +110,13 @@ android {
         }
     }
 
-    flavorDimensions.add("variants")
+    flavorDimensions.add("distribution")
     productFlavors {
-        register("core")
-        register("foss")
-        register("gplay")
+        register("standalone") {
+            dimension = "distribution"
+        }
         register("compat") {
+            dimension = "distribution"
             applicationId = "org.fossify.thankyou"
             manifestPlaceholders["themeProviderAuthority"] = "org.fossify.android.provider"
             buildConfigField(
@@ -147,8 +147,8 @@ android {
         generateLocaleConfig = true
     }
 
-    // Kotlin source packages are migrated separately from the Android application ID.
-    // This namespace is not the installed package name.
+    // Legacy source namespace is kept for now because stock compatibility still targets
+    // the original Fossify global-theme contract. Product identity is controlled by applicationId.
     namespace = "org.fossify.thankyou"
 
     lint {

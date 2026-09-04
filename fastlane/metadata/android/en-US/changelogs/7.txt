@@ -1,4 +1,0 @@
-Fixed:
-
-• The `Use English language` preference now works properly 
-

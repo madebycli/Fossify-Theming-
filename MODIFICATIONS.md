@@ -1,26 +1,30 @@
 # Modified Fossify Thank You
 
-This repository is a modified work based on Fossify Thank You, but the resulting application is a standalone theming utility.
+This repository is a modified GPLv3 work based on Fossify Thank You. The resulting product is Fossify Theming, a theming-only utility.
 
 ## Main modifications
 
-- Reworked the app into **Fossify Theming**.
-- Changed the Android application ID to `org.forfossify.theming`.
-- Moved the exported theme provider to `org.forfossify.theming.provider`.
-- Removed the original Thank You purchase/donation role and related promotional UI/settings.
+- Reworked the application into **Fossify Theming**.
+- Added standalone Android identity `org.forfossify.theming` and provider `org.forfossify.theming.provider`.
+- Removed purchase, donation, unlock and promotional Thank You product behavior.
+- Removed unused About/legacy helper code and upstream product/release automation.
 - Added hybrid Material You + custom per-color overrides.
 - Added a dark-mode-only custom background, default `#0E0E0F`.
 - Added configurable system/custom app-icon color, default black.
 - Added persistent Live Sync for wallpaper and UI-mode changes.
 - Added local theme profiles.
-- Kept the installed Fossify app list as a theming-target overview.
-- Removed Thank You from the theming-target list so the official app can coexist independently.
+- Added installed-app compatibility diagnostics.
+- Added a stock compatibility flavor using the legacy Fossify package/provider contract for unmodified Fossify apps.
+- Reduced build variants to `standalone` and `compat`.
+- Added an optimized temporary-signed `compatPerformance` test build.
+
+## Upstream policy
+
+The repository does not automatically merge Fossify Thank You changes. Upstream work is reviewed and imported only when relevant to theming, Fossify theme-provider compatibility, Android API/security requirements or required build compatibility. See `UPSTREAM.md`.
 
 ## Compatibility
 
-The standalone package can be installed next to official Fossify Thank You.
-
-Current stock Fossify Commons hardcodes the official Thank You package/provider for global theming. Therefore stock Fossify APKs need a Commons integration change before they can consume `org.forfossify.theming.provider`.
+The standalone package can coexist with official Fossify Thank You. Current stock Fossify Commons still expects the legacy Thank You package/provider contract, so `compat` exists as a transition path until target apps can consume the standalone provider directly.
 
 ## License
 

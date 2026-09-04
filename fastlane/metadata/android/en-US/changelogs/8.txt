@@ -1,8 +1,0 @@
-Changed:
-
-• Updated translations
-
-Fixed:
-
-• Replaced `Use English language` checkbox with a switch
-

@@ -2,17 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="org.fossify.android.permission.WRITE_GLOBAL_SETTINGS" />
 
     <!--
         Stock Fossify apps already request this permission through Commons.
         The compatibility flavor defines it as normal so official Fossify APKs,
         which are signed with a different key than this local fork, can still
-        read the legacy provider. The provider additionally verifies that the
-        caller package is a known Fossify package.
+        read the legacy provider. The provider still validates known Fossify callers.
     -->
     <permission
         android:name="org.fossify.android.permission.WRITE_GLOBAL_SETTINGS"
@@ -21,25 +17,6 @@
     <application
         android:label="@string/app_brand_name"
         tools:replace="android:label">
-
-        <service
-            android:name="org.fossify.thankyou.services.ThemeSyncService"
-            android:exported="false"
-            android:foregroundServiceType="specialUse">
-            <property
-                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="Keeps Fossify Material You theme overrides synchronized with wallpaper and dark-mode changes." />
-        </service>
-
-        <receiver
-            android:name="org.fossify.thankyou.receivers.ThemeSyncBootReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-            </intent-filter>
-        </receiver>
 
         <provider
             android:name="org.fossify.thankyou.contentproviders.MyContentProvider"

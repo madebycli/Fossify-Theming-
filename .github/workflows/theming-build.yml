@@ -28,8 +28,8 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
-      - name: Build debug APKs
-        run: ./gradlew assembleCoreDebug assembleFossDebug assembleCompatDebug --stacktrace
+      - name: Build standalone and stock-compat debug APKs
+        run: ./gradlew assembleStandaloneDebug assembleCompatDebug --stacktrace
 
       - name: Build optimized compatibility APK
         run: ./gradlew assembleCompatPerformance --stacktrace
@@ -39,8 +39,7 @@ jobs:
         with:
           name: fossify-theming-debug-apks
           path: |
-            app/build/outputs/apk/core/debug/*.apk
-            app/build/outputs/apk/foss/debug/*.apk
+            app/build/outputs/apk/standalone/debug/*.apk
             app/build/outputs/apk/compat/debug/*.apk
           if-no-files-found: error
 

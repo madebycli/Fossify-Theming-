@@ -1,62 +1,67 @@
 # Fossify Theming
 
-A standalone GPLv3 Android app for controlling a shared Fossify color profile.
+A focused Android theming controller for Fossify apps.
 
-Fossify Theming started from Fossify Thank You, but the product itself is now focused only on theming. It has its own Android application ID and can be installed next to the official Fossify Thank You app.
+The project started as a GPLv3 fork of Fossify Thank You, but the app itself is now intentionally limited to theming: Material You system colors, per-color overrides, profiles, live sync, app compatibility status and theme export.
 
-## Package identity
+## What it does
 
-- Application ID: `org.forfossify.theming`
-- Theme provider: `content://org.forfossify.theming.provider/settings`
-- Visible app name: `Fossify Theming`
+In dark mode, every supported color role can independently use either the current Android Material You system color or a custom value:
 
-The app no longer acts as a purchase/unlock or donation companion.
+- Primary
+- Accent
+- Background, default `#0E0E0F`
+- Text
+- App icon, default black
 
-## Hybrid Material You theming
+Light mode stays on the normal system Material You theme. Profiles can be saved locally and Live Sync refreshes exported colors after wallpaper or UI-mode changes.
 
-Fossify Theming combines Android's wallpaper-generated Material You colors with per-color overrides.
+## Builds
 
-In dark mode, each supported color can independently use either:
+There are only two distribution flavors:
 
-- **System**: follow the current Material You / wallpaper color
-- **Custom**: keep a color selected by you
+- `standalone`: application ID `org.forfossify.theming`, provider `org.forfossify.theming.provider`. This is the clean long-term app identity and can coexist with official Fossify Thank You.
+- `compat`: application ID `org.fossify.thankyou`, provider `org.fossify.android.provider`. This exists only so unmodified stock Fossify apps can consume the theme today.
 
-The default profile uses:
+The optimized temporary test build is `compatPerformance`. It is R8/minified, resource-shrunk, non-debuggable and currently signed only with the Android debug key. The real release key will be configured later.
 
-- Primary: System
-- Accent: System
-- Background: Custom `#0E0E0F`
-- Text: System
-- App icon: Custom black
+### Stock compatibility note
 
-Light mode intentionally remains the normal system Material You theme.
+Stock Fossify Commons checks the legacy Thank You package/provider and the global-theme permission. Because the compatibility build uses a locally defined normal permission, Fossify apps that were installed before Fossify Theming may need to be reinstalled once. The main screen shows which installed apps are ready and which need that reinstall.
 
-## Live Sync
+## Upstream policy
 
-Live Sync runs as an Android foreground service and refreshes the exported theme when the wallpaper or light/dark configuration changes. The service can be turned off from the dashboard.
+This repository does **not** automatically merge Fossify Thank You upstream changes.
 
-## Profiles
+Upstream changes are intentionally reviewed and brought downstream only when they are relevant to the theming project, for example:
 
-Any hybrid color setup can be saved as a named local profile, loaded again later, or deleted.
+- Fossify global-theme/provider contract changes
+- Material You / theme handling changes
+- Fossify Commons compatibility changes that affect theming
+- Android build/API/security fixes required by this app
 
-## Fossify integration
+Donation, purchase/unlock, store metadata, Thank You UI and unrelated Fossify maintenance changes are not synced. See `UPSTREAM.md`.
 
-The standalone app exports its theme through its own provider and sends the Fossify global-config update broadcast.
+## CI
 
-**Important:** current stock Fossify Commons explicitly detects `org.fossify.thankyou` and its original provider. Therefore unmodified Fossify release APKs do not automatically consume the new standalone provider yet. The intended integration is to point a Fossify Commons fork at `org.forfossify.theming.provider`, then build the target Fossify apps with that Commons version.
+The single project workflow builds:
 
-This tradeoff is intentional because it lets Fossify Theming coexist with the official Thank You app and keeps the theming project independent from Thank You.
+```bash
+./gradlew assembleStandaloneDebug assembleCompatDebug assembleCompatPerformance
+```
+
+Successful `main` builds also refresh the temporary APK in `performance/`.
 
 ## Privacy
 
 - No account
 - No cloud backend
 - No wallpaper image upload
-- No internet connection is required for theming
+- No network connection required for theming
 - Profiles and overrides stay on-device
 
 ## License and upstream
 
-This project is a modified work based on Fossify Thank You and remains licensed under the GNU General Public License v3.0. See `LICENSE` and `MODIFICATIONS.md`.
+This project is a modified work based on Fossify Thank You and remains licensed under GNU GPL v3. See `LICENSE` and `MODIFICATIONS.md`.
 
-Upstream project: FossifyOrg/Thank-You
+Upstream origin: `FossifyOrg/Thank-You`
