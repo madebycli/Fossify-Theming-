@@ -203,7 +203,7 @@ private fun PreviewFossifyApp(
 ) {
     FossifyApp(
         app = FossifyApp(
-            name = "Fossify Thank You",
+            name = "Fossify Theming",
             icon = AppCompatResources.getDrawable(LocalContext.current, R.mipmap.ic_launcher),
             packageName = "org.forfossify.theming",
             versionName = "1.2.1",
