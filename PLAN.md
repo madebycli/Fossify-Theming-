@@ -53,7 +53,7 @@ org.forfossify...   org.fossify.android.provider
 ```text
 app/src/main/
 ├── AndroidManifest.xml
-├── kotlin/org/fossify/thankyou/
+├── kotlin/org/forfossify/theming/
 │   ├── activities/
 │   ├── contentproviders/
 │   ├── extensions/
@@ -70,7 +70,7 @@ performance/
 UPSTREAM.md
 ```
 
-Der Kotlin-Source-Namespace ist derzeit noch der historische Upstream-Namespace. Er enthält keine Thank-You-Produktlogik mehr. Eine spätere reine Namespace-Migration ist möglich, ist aber nicht nötig, um die Android-Produktidentität oder das Theming-Verhalten zu bestimmen.
+Der Kotlin-Source-Namespace ist vollständig auf `org.forfossify.theming` migriert. Der alte Thank-You-Namespace bleibt nur als absichtlich verwendete Package-ID im Stock-Kompatibilitätsmodus bestehen.
 
 ## Umsetzungsschritte
 
@@ -87,6 +87,5 @@ Der Kotlin-Source-Namespace ist derzeit noch der historische Upstream-Namespace.
 
 ## Offene Fragen/Unklarheiten
 
-- UNKLAR: Wann der historische Kotlin-Source-Namespace ebenfalls auf `org.forfossify.theming` migriert werden soll.
 - UNKLAR: Welche Fossify-Apps später zuerst gegen einen eigenen Commons-Fork gebaut werden sollen.
 - UNKLAR: Wann der echte Release-Key eingerichtet wird.

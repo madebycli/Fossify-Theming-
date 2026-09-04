@@ -147,9 +147,9 @@ android {
         generateLocaleConfig = true
     }
 
-    // Legacy source namespace is kept for now because stock compatibility still targets
-    // the original Fossify global-theme contract. Product identity is controlled by applicationId.
-    namespace = "org.fossify.thankyou"
+    // Kotlin/Compose namespace belongs to Fossify Theming. The compat flavor only changes
+    // the installed applicationId/provider contract for unmodified stock Fossify apps.
+    namespace = "org.forfossify.theming"
 
     lint {
         checkReleaseBuilds = false

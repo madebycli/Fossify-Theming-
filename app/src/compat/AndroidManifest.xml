@@ -19,16 +19,16 @@
         tools:replace="android:label">
 
         <provider
-            android:name="org.fossify.thankyou.contentproviders.MyContentProvider"
+            android:name="org.forfossify.theming.contentproviders.MyContentProvider"
             android:permission="org.fossify.android.permission.WRITE_GLOBAL_SETTINGS" />
 
         <activity-alias
-            android:name=".activities.SplashActivity.Green"
+            android:name="org.forfossify.theming.activities.SplashActivity.Green"
             android:enabled="false"
             tools:replace="android:enabled" />
 
         <activity-alias
-            android:name=".activities.SplashActivity.Grey_black"
+            android:name="org.forfossify.theming.activities.SplashActivity.Grey_black"
             android:enabled="true"
             tools:replace="android:enabled" />
     </application>
